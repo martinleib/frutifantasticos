@@ -1,65 +1,449 @@
-<!-- m@sillystars.art - entusiasta del código roto y sin debuggear !-->
+<!-- 
+	  ______          
+     /  ___ \         
+     |  / ,.\ |O    O  
+     | |  \d/ | \__/   
+     |__\_____/-(..)   
+    _/_____________/ dwb
+    github.com/martinleib
+
+
+	entusiasta del código roto y sin debuggear 
+	codigo powered by cruzar los dedos! 100% no semántico
+!-->
 
 <!DOCTYPE html>
-	<html>
-		<head>
-			<meta charset="utf-8">
-			<meta name="viewport" content="width=device-width, initial-scale=1">
-			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
-			<link rel="stylesheet" href="https://lagrilla.info/vendor/hover-min.css">
-			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-			<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-        crossorigin="" />
-			<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-        crossorigin=""></script>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+		integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://lagrilla.info/vendor/hover-min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+		integrity="sha512-c42qTSw/wPZ3/5LBzD+Bw5f7bSF2oxou6wEb+I/lqeaKV5FDIfMvvRp772y4jcJLKuGUOpbJMdg/BTl50fJYAw=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css"
+		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"
+		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@0.7.1/dist/leaflet.css"
+		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+		crossorigin="" />
+	<script src="https://unpkg.com/leaflet@0.7.1/dist/leaflet.js"
+		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+		crossorigin=""></script>
+	<link href="https://cdn.jsdelivr.net/gh/hung1001/font-awesome-pro@bf7775b/css/all.css" rel="stylesheet"
+		type="text/css" />
+
+	<link rel="favicon" type="image" href="x.png">
+	<link rel="shortcut icon" type="image" href="x.png">
+
+	<style>
+		*,
+		body {
+			scroll-behavior: smooth;
+		}
+
+		.fade-bg-dark {
+			background-color: transparent !important;
+			transition: 0.3s;
+		}
+
+		.centrado {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 100%;
+			margin: 0 auto;
+			text-align: center;
+		}
+
+		.moving-mouse-holder {
+			left: 50%;
+			position: absolute;
+			text-align: center;
+			bottom: 0;
+			transform: translate(-50%, -50%);
+		}
+
+		.moving-mouse-holder .mouse {
+			width: 26px;
+			height: 40px;
+			position: relative;
+			right: 0;
+			border-radius: 18px;
+			border: 2px solid #ffffff;
+		}
+
+		.moving-mouse-holder .mouse-button {
+			background-color: #ffffff;
+			width: 4px;
+			height: 10px;
+			border-radius: 2px;
+			position: absolute;
+			top: 10px;
+			left: 50%;
+			margin: 0 0 0 -2px;
+			animation: mouse-scroll 1s infinite alternate;
+		}
+
+		@keyframes mouse-scroll {
+			to {
+				transform: translate(0, 6px) scale(1, 0.8);
+			}
+		}
+
+		.photo-gallery h2 {
+			font-weight: bold;
+			margin-bottom: 40px;
+			padding-top: 40px;
+			color: inherit;
+		}
+
+		@media (max-width:767px) {
+			.photo-gallery h2 {
+				margin-bottom: 25px;
+				padding-top: 25px;
+				font-size: 24px;
+			}
+		}
+
+		.photo-gallery .intro {
+			font-size: 16px;
+			max-width: 500px;
+			margin: 0 auto 40px;
+		}
+
+		.photo-gallery .intro p {
+			margin-bottom: 0;
+		}
+
+		.photo-gallery .photos {
+			padding-bottom: 20px;
+		}
+
+		.photo-gallery .item {
+			padding-bottom: 30px;
+		}
+
+		.main1 {
+			height: 100vh;
+			background-color: #2a2a2a;
+		}
+
+		.bg-casi-dark {
+			background-color: #2a2a2a;
+		}
 		
-			<link rel="favicon" type="image" href="pic/x.png">
-			<link rel="shortcut icon" type="image" href="pic/x.png">
+		.main2 {
+			background-color: #eef4f7;
+			color: #313437;
+		}
 
-			<link rel="stylesheet" href="assets/app.css">
-			
-			<title>Frutifantásticos</title>
-		</head>
+		.map-clean h2 {
+			font-weight: 700;
+			margin-bottom: 40px;
+			padding-top: 40px;
+			color: inherit
+		}
 
-		<body class="bg-dark text-white">
-		    <header id="nav1">
-                <nav class="navbar navbar-expand-lg navbar-dark mitosis-bg-dark text-light fixed-top">
-                    <a class="navbar-brand animate__animated animate__zoomIn  href="#"><p>Frutifantásticos</p></a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse"
-                        data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse flex-grow-1 text-right" id="navbarNavAltMarkup">
-                        <div class="navbar-nav ml-auto flex-nowrap">
-                            <a class="nav-link active animate__animated animate__zoomIn" href="#">Inicio
-                                <span class="sr-only">(current)</span></a>
-                            <a class="nav-link animate__animated animate__zoomIn" href="#fotos">Fotos</a>
-							<a class="nav-link animate__animated animate__zoomIn" href="#recetas">Recetas</a>
-                            <a class="nav-link animate__animated animate__zoomIn" href="#contacto"
-                                tabindex="-1" aria-disabled="true">Contacto</a>
-                        </div>
-                    </div>
-                </nav>
-            </header>
-			
-			<main>
-				<div class="centrado">
-					<h1 class="animate__animated animate__zoomIn">Frutifantásticos</h1>
-						<p class="animate__animated animate__zoomIn">Luca Pascale, Martin Leib, Melisa Blau, Julieta Lacruz, Olivia Barreto, Ana Pereira</p>
+		@media (max-width:767px) {
+			.map-clean h2 {
+				margin-bottom: 25px;
+				padding-top: 25px;
+				font-size: 24px
+			}
+		}
+
+		.map-clean .intro {
+			font-size: 16px;
+			max-width: 500px;
+			margin: 0 auto 40px
+		}
+
+		.map-clean iframe {
+			background-color: #eee
+		}
+
+		.features-boxed h2 {
+			font-weight: bold;
+			margin-bottom: 40px;
+			padding-top: 40px;
+			color: inherit;
+		}
+
+		@media (max-width:767px) {
+			.features-boxed h2 {
+				margin-bottom: 25px;
+				padding-top: 25px;
+				font-size: 24px;
+			}
+		}
+
+		.features-boxed .intro {
+			font-size: 16px;
+			max-width: 500px;
+			margin: 0 auto;
+		}
+
+		.features-boxed .intro p {
+			margin-bottom: 0;
+		}
+
+		.features-boxed .features {
+			padding: 50px 0;
+		}
+
+		.features-boxed .item {
+			text-align: center;
+		}
+
+		.features-boxed .item .box {
+			text-align: center;
+			padding: 30px;
+			background-color: #eef4f7;
+			margin-bottom: 30px;
+		}
+
+		.features-boxed .item .icon {
+			font-size: 60px;
+			color: #1485ee;
+			margin-top: 20px;
+			margin-bottom: 35px;
+		}
+
+		.features-boxed .item .name {
+			font-weight: bold;
+			font-size: 18px;
+			margin-bottom: 8px;
+			margin-top: 0;
+			color: inherit;
+		}
+
+		.features-boxed .item .description {
+			font-size: 15px;
+			margin-top: 15px;
+			margin-bottom: 20px;
+		}
+
+		.footer-svg {
+			position: absolute;
+			z-index: 20;
+			bottom: 0;
+			width: 100%;
+			fill: #eef4f7;
+		}
+
+		@media only screen and (max-device-width: 480px) {
+			#canvas {
+				display: none;
+			}
+
+			.footer-svg {
+				display: none;
+			}
+
+			.fa-arrow-down {
+				color: #eef4f7 !important;
+			}
+		}
+
+		footer {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			z-index: 40;
+		}
+	</style>
+	<title>Frutifantásticos</title>
+</head>
+
+<body class="text-white">
+	<div class="main1">
+		<header id="nav1">
+			<nav class="navbar navbar-expand-lg navbar-dark fade-bg-dark text-light fixed-top">
+				<a class="navbar-brand animate__animated animate__zoomIn  href=" #">
+					<p>Frutifantásticos</p>
+				</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+					aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse flex-grow-1 text-right" id="navbarNavAltMarkup">
+					<div class="navbar-nav ml-auto flex-nowrap">
+						<a class="nav-link active animate__animated animate__zoomIn" href="#">Inicio
+							<span class="sr-only">(current)</span></a>
+						<a class="nav-link animate__animated animate__zoomIn" href="#recetas">Recetas</a>
+						<a class="nav-link animate__animated animate__zoomIn" href="#contacto" tabindex="-1"
+							aria-disabled="true">Contacto</a>
+					</div>
 				</div>
-			</main>
-			
-			<div class="moving-mouse-holder">
-                <div class="mouse">
-                    <div class="mouse-button">&nbsp;</div>
-                </div>
-            </div>
-			<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-			<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-			<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
-		</body>
+			</nav>
+		</header>
 
-	</html>
+		<main>
+			<div class="centrado">
+				<h1 class="animate__animated animate__zoomIn">Frutifantásticos</h1>
+				<p class="animate__animated animate__zoomIn">Luca Pascale, Martin Leib, Melisa Blau, Julieta Lacruz,
+					Olivia
+					Barreto, Ana Pereira</p>
+			</div>
+		</main>
+
+		<footer class="footer-svg">
+			<div class="shape shape-bottom" data-negative="true">
+				<svg width="100%" height="96px" viewBox="0 0 100 100" version="0.1" xmlns="http://www.w3.org/2000/svg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="none" style="color: #f3ebe7;">
+					<path class="shape-fill" d="M0,0 C40,33 66,52 75,52 C83,52 92,33 100,0 L100,100 L0,100 L0,0 Z">
+					</path>
+				</svg>
+			</div>
+		</footer>
+
+		<footer>
+			<a href="#fotos">
+				<span class="animate__animated animate__fadeInDown">
+					<i class="fal fa-arrow-down fa-3x ml-4 mb-4 hvr-sink"></i>
+				</span>
+			</a>
+		</footer>
+	</div>
+
+	<div class="main2">
+		<!--
+		<div class="photo-gallery" id="fotos">
+			<div class="container">
+				<div class="intro">
+					<h2 class="text-center">Galería de fotos</h2>
+				</div>
+				<div class="row photos">
+					<div class="col-sm-6 col-md-4 col-lg-3 item"><a data-lightbox="photos" href="missing.jpg"><img
+								class="img-fluid" src="missing.jpg"></a>
+					</div>
+					<div class="col-sm-6 col-md-4 col-lg-3 item"><a data-lightbox="photos" href="missing.jpg"><img
+								class="img-fluid" src="missing.jpg"></a></div>
+					<div class="col-sm-6 col-md-4 col-lg-3 item"><a data-lightbox="photos" href="missing.jpg"><img
+								class="img-fluid" src="missing.jpg"></a>
+					</div>
+					<div class="col-sm-6 col-md-4 col-lg-3 item"><a data-lightbox="photos" href="missing.jpg"><img
+								class="img-fluid" src="missing.jpg"></a>
+					</div>
+				</div>
+			</div>
+		</div>
+-->
+
+		<div class="features-boxed" id="recetas">
+			<div class="container">
+				<div class="intro">
+					<h2 class="text-center">Recetas</h2>
+					<!-- <p class="text-center">Recetas de algunos de los platos presentados</p> Un poco redundante, no? !-->
+				</div>
+				<div class="row justify-content-center features">
+					<div class="col-sm-6 col-md-5 col-lg-4 item animate__animated animate__fadeInUp"
+						style="webkit-animation-delay: 0.3s; animation-delay: 0.3s;">
+						<div class="box"><i class="fas fa-apple-alt icon"></i>
+							<h3 class="name">Receta #1</h3>
+							<p class="description">Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+								Voluptatibus eius ea iusto assumenda perspiciatis? Dignissimos dolores iste laboriosam
+								officia, laborum obcaecati nesciunt illo veniam aut possimus reiciendis harum?
+								Distinctio, libero.</p><a class="learn-more" href="#">Leer más »</a>
+						</div>
+					</div>
+					<div class="col-sm-6 col-md-5 col-lg-4 item animate__animated animate__fadeInUp"
+						style="webkit-animation-delay: 0.6s; animation-delay: 0.6s;">
+						<div class="box"><i class="fas fa-lemon icon"></i>
+							<h3 class="name">Receta #2</h3>
+							<p class="description">Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+								Voluptatibus eius ea iusto assumenda perspiciatis? Dignissimos dolores iste laboriosam
+								officia, laborum obcaecati nesciunt illo veniam aut possimus reiciendis harum?
+								Distinctio, libero.</p><a class="learn-more" href="#">Leer más »</a>
+						</div>
+					</div>
+					<div class="col-sm-6 col-md-5 col-lg-4 item animate__animated animate__fadeInUp"
+						style="webkit-animation-delay: 0.9s; animation-delay: 0.9s;">
+						<div class="box"><i class="fas fa-carrot icon"></i>
+							<h3 class="name">Receta #3</h3>
+							<p class="description">Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+								Voluptatibus eius ea iusto assumenda perspiciatis? Dignissimos dolores iste laboriosam
+								officia, laborum obcaecati nesciunt illo veniam aut possimus reiciendis harum?
+								Distinctio, libero.</p><a class="learn-more" href="#">Leer más »</a>
+						</div>
+					</div>
+					<div class="col-sm-6 col-md-5 col-lg-4 item animate__animated animate__fadeInUp"
+						style="webkit-animation-delay: 1.2s; animation-delay: 1.2s;">
+						<div class="box"><i class="fas fa-seedling icon"></i>
+							<h3 class="name">Receta #4</h3>
+							<p class="description">Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+								Voluptatibus eius ea iusto assumenda perspiciatis? Dignissimos dolores iste laboriosam
+								officia, laborum obcaecati nesciunt illo veniam aut possimus reiciendis harum?
+								Distinctio, libero.</p><a class="learn-more" href="#">Leer más »</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="map-clean" id="contacto">
+			<div id="mapid"
+				class="map map-home leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom animate__animated animate__fadeInUp"
+				style="max-width: 1500px; height: 650px; margin: auto; webkit-animation-delay: 2.5s; animation-delay: 1.5s;">
+			</div>
+
+			<script>
+				var map = L.map('mapid').setView([-34.8674364, -55.2701277], 17);
+
+				L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+					attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+				}).addTo(map);
+
+				L.marker([-34.8674364, -55.2701277]).addTo(map)
+					.bindPopup("<b>Instituto Galileo Galilei</b><br />Acá vamos a estar haciendo nuestra presentación el viernes 3 de diciembre a las 18 horas. Estás invitado/a!").openPopup();
+				var popup = L.popup();
+
+			</script>
+		</div>
+
+		<div class="mt-0 mb-0">
+			<div class="p-2 mt-0 mb-0 text-center">
+				<div class="relative-bottom mt-0 mb-0">
+					<div class="p-2 mb-0 text-center">
+						<div class="animate__animated animate__fadeInUp p-2 mb-0 mt-0 text-center text-footer">
+							Hosteado gratuitamente en Netlify usando un dominio provisto por Freenom.
+							<br />
+							Frutifantásticos es un proyecto open source! 🌍 &mdash; <a
+								href="https://github.com/martinleib/frutifantasticos">codigo fuente</a>
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+			<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+				integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+				crossorigin="anonymous"></script>
+			<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"
+				integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2"
+				crossorigin="anonymous"></script>
+			<script>
+				$(function () {
+					$(document).scroll(function () {
+						var $nav = $(".navbar");
+						$nav.toggleClass('scrolled', $(this).scrollTop() > $nav.height());
+					});
+
+					$(document).scroll(function () {
+						var $nav = $(".navbar");
+						$nav.removeClass('fade-bg-dark', $(this).scrollTop() > $nav.height());
+						$nav.toggleClass('bg-casi-dark', $(this).scrollTop() > $nav.height());
+					});
+				});
+			</script>
+</body>
+
+</html>
